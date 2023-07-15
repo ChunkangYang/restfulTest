@@ -84,22 +84,17 @@ app.patch('/recipes/:id', async (req, res) => {
 
 app.delete('/recipes/:id', async (req, res) => {
   try {
-    msg = "start";
-    const id = req.params;
+    const { id } = req.params;
     const query = 'DELETE FROM recipes WHERE id = $1'
-    msg += " before await";
     const result = await query(query, id);
-    msg += " after await";
     const rowsAffected = result.rowCount;
     if (rowsAffected == 0) {
-      msg += " true";
       res.status(200).json({ message: 'No Recipe found' });
     } else {
-      msg += " false";
       res.status(200).json({ message: 'Recipe successfully removed!' });
     }
-  } catch (er) {
-    res.status(500).json({ error: 'Internal server error', e: msg });
+  } catch (err) {
+    res.status(500).json({ error: 'Internal server error', e: err });
   }
   const recipeId = req.params.id;
 });
