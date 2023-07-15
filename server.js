@@ -23,8 +23,6 @@ app.post('/recipes', async (req, res) => {
     const query = 'INSERT INTO recipes (title, making_time, serves, ingredients, cost) VALUES ($1, $2, $3, $4, $5) RETURNING *';
     const values = [title, making_time, serves, ingredients, cost];
     const result = await pool.query(query, values);
-    // const resQuery = 'SELECT * FROM recipes WHERE id';
-    // const resResult = await pool.query(resQuery);
     const recipes = result.rows.map(row => ({ id: row.id, title: row.title, making_time: row.making_time,
         servers: row.servers, ingredients: row.ingredients, cost: row.cost, created_at: row.created_at, updated_at: row.updated_at }));
 
@@ -57,15 +55,58 @@ app.get('/recipes/:id', async (req, res) => {
     const query = 'SELECT * FROM recipes WHERE id = $1';
     const result = await pool.query(query, [id]);
     if (result.rows.length > 0) {
-      res.json(result.rows[0]);
-    } else {
-      res.status(404).json({ error: 'Recipe not found' });
+      res.status(200).json({
+        message: 'Recipe details by id',
+        recipe: result.rows[0]});
     }
   } catch (error) {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
 
+app.patch('/recipes/:id', (req, res) => {
+  try {
+    const { id } = req.params;
+    const updatedFields = req.body;
+    const query = `UPDATE recipes SET ${buildUpdateQuery(updatedFields)} WHERE id = $1 RETURNING *`;
+    const result = await pool.query(query, [id]);
+    const recipes = result.rows.map(row => ({ id: row.id, title: row.title, making_time: row.making_time,
+      servers: row.servers, ingredients: row.ingredients, cost: row.cost }));
+
+    res.status(200).json({
+      message: 'Recipe updated successfully',
+      recipe: recipes
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+app.delete('/recipes/:id', (req, res) => {
+  try {
+    const id = req.params;
+    const query = 'DELETE FROM recipes WHERE id = $1'
+    const result = await query(query, id);
+    const rowsAffected = result.rowCount;
+    if (rowsAffected == 0) {
+      res.status(200).json({ message: 'No Recipe found' });
+    } else {
+      res.status(200).json({ message: 'Recipe successfully removed!' });
+    }
+  } catch (error) {
+    res.status(500).json({ error: 'Internal server error' });
+  }
+  const recipeId = req.params.id;
+});
+
 app.listen(3000, () => {
   console.log('Server is running on port 3000');
 });
+
+function buildUpdateQuery(fields) {
+  const queryParts = [];
+  for (const [key, value] of Object.entries(fields)) {
+    queryParts.push(`${key} = '${value}'`);
+  }
+  return queryParts.join(', ');
+}
