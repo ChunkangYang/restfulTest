@@ -41,7 +41,7 @@ app.get('/recipes', async (req, res) => {
     const query = 'SELECT id, title, making_time, serves, ingredients, cost FROM recipes';
     const result = await pool.query(query);
     const recipes = result.rows.map(row => ({ id: row.id, title: row.title, making_time: row.making_time,
-        servers: row.servers, ingredients: row.ingredients, cost: row.cost }));
+      serves: row.serves, ingredients: row.ingredients, cost: row.cost }));
     res.status(200).json({ recipes });
   } catch (err) {
     res.status(500).json({ error: 'Internal server error', e: err });
@@ -60,7 +60,7 @@ app.get('/recipes/:id', async (req, res) => {
     //     recipe: [result.rows[0]]});
     // }
     const recipes = result.rows.map(row => ({ id: row.id, title: row.title, making_time: row.making_time,
-      servers: row.servers, ingredients: row.ingredients, cost: row.cost }));
+      serves: row.serves, ingredients: row.ingredients, cost: row.cost }));
     res.status(200).json({
       message: 'Recipe details by id',
       recipe: recipes
