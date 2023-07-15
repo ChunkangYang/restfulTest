@@ -61,7 +61,7 @@ app.get('/recipes/:id', async (req, res) => {
       recipe: recipes
     });
   } catch (error) {
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ error: 'Internal server error', e: err });
   }
 });
 
@@ -88,19 +88,15 @@ app.delete('/recipes/:id', async (req, res) => {
     let msg = "start";
     const { id } = req.params;
     const query = 'DELETE FROM recipes WHERE id = $1'
-    msg += " before await";
     const result = await pool.query(query, [id]);
-    msg += " after await";
     const rowsAffected = result.rowCount;
     if (rowsAffected == 0) {
-      msg += " true";
       res.status(200).json({ message: 'No Recipe found' });
     } else {
-      msg += " false";
       res.status(200).json({ message: 'Recipe successfully removed!' });
     }
   } catch (err) {
-    res.status(500).json({ error: 'Internal server error', e: msg });
+    res.status(500).json({ error: 'Internal server error', e: err });
   }
 });
 
