@@ -54,11 +54,6 @@ app.get('/recipes/:id', async (req, res) => {
     const { id } = req.params;
     const query = 'SELECT * FROM recipes WHERE id = $1';
     const result = await pool.query(query, [id]);
-    // if (result.rows.length > 0) {
-    //   res.status(200).json({
-    //     message: 'Recipe details by id',
-    //     recipe: [result.rows[0]]});
-    // }
     const recipes = result.rows.map(row => ({ id: row.id, title: row.title, making_time: row.making_time,
       serves: row.serves, ingredients: row.ingredients, cost: row.cost }));
     res.status(200).json({
@@ -70,44 +65,44 @@ app.get('/recipes/:id', async (req, res) => {
   }
 });
 
-// app.patch('/recipes/:id', async (req, res) => {
-//   try {
-//     const { id } = req.params;
-//     const updatedFields = req.body;
-//     const query = `UPDATE recipes SET ${buildUpdateQuery(updatedFields)} WHERE id = $1 RETURNING *`;
-//     const result = await pool.query(query, [id]);
-//     const recipes = result.rows.map(row => ({ id: row.id, title: row.title, making_time: row.making_time,
-//       servers: row.servers, ingredients: row.ingredients, cost: row.cost }));
+app.patch('/recipes/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updatedFields = req.body;
+    const query = `UPDATE recipes SET ${buildUpdateQuery(updatedFields)} WHERE id = $1 RETURNING *`;
+    const result = await pool.query(query, [id]);
+    const recipes = result.rows.map(row => ({ id: row.id, title: row.title, making_time: row.making_time,
+      servers: row.servers, ingredients: row.ingredients, cost: row.cost }));
 
-//     res.status(200).json({
-//       message: 'Recipe updated successfully',
-//       recipe: recipes
-//     });
-//   } catch (error) {
-//     res.status(500).json({ error: 'Internal server error' });
-//   }
-// });
+    res.status(200).json({
+      message: 'Recipe updated successfully',
+      recipe: recipes
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
 
-// app.delete('/recipes/:id', async (req, res) => {
-//   try {
-//     let msg = "start";
-//     const { id } = req.params;
-//     const query = 'DELETE FROM recipes WHERE id = $1'
-//     msg += " before await";
-//     const result = await pool.query(query, [id]);
-//     msg += " after await";
-//     const rowsAffected = result.rowCount;
-//     if (rowsAffected == 0) {
-//       msg += " true";
-//       res.status(200).json({ message: 'No Recipe found' });
-//     } else {
-//       msg += " false";
-//       res.status(200).json({ message: 'Recipe successfully removed!' });
-//     }
-//   } catch (err) {
-//     res.status(500).json({ error: 'Internal server error', e: msg });
-//   }
-// });
+app.delete('/recipes/:id', async (req, res) => {
+  try {
+    let msg = "start";
+    const { id } = req.params;
+    const query = 'DELETE FROM recipes WHERE id = $1'
+    msg += " before await";
+    const result = await pool.query(query, [id]);
+    msg += " after await";
+    const rowsAffected = result.rowCount;
+    if (rowsAffected == 0) {
+      msg += " true";
+      res.status(200).json({ message: 'No Recipe found' });
+    } else {
+      msg += " false";
+      res.status(200).json({ message: 'Recipe successfully removed!' });
+    }
+  } catch (err) {
+    res.status(500).json({ error: 'Internal server error', e: msg });
+  }
+});
 
 app.listen(3000, () => {
   console.log('Server is running on port 3000');
