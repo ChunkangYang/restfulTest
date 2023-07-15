@@ -6,7 +6,7 @@ app.use(express.json());
 
 
 const pool = new Pool({
-  connectionString: 'postgres://root:TLaNNuzwcGtixcp73G67XfguyUAMFk3i@dpg-cip2fq6nqql4qa1bll3g-a.oregon-postgres.render.com/restful_test',
+  connectionString: 'postgres://root:TLaNNuzwcGtixcp73G67XfguyUAMFk3i@dpg-cip2fq6nqql4qa1bll3g-a/restful_test',
 });
 
 
