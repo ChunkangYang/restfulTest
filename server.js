@@ -11,6 +11,13 @@ const pool = new Pool({
 
 
 app.post('/recipes', async (req, res) => {
+  const recipe = req.body;
+  
+  if (!recipe.title || !recipe.making_time || !recipe.serves || !recipe.ingredients || !recipe.cost) {
+    res.status(500).json({ message: 'Recipe creation failed!', required: 'title, making_time, serves, ingredients, cost' });
+    return;
+  }
+
   try {
     const { title, making_time, serves, ingredients, cost } = req.body;
     const query = 'INSERT INTO recipes (title, making_time, serves, ingredients, cost) VALUES ($1, $2, $3, $4, $5) RETURNING *';
@@ -26,7 +33,7 @@ app.post('/recipes', async (req, res) => {
         recipe: recipes
     })
   } catch (error) {
-    res.status(500).json({ message: 'Recipe creation failed!', required: 'title, making_time, serves, ingredients, cost' });
+    res.status(500).json({ error: 'Internal server error', e: err });
   }
 });
 
