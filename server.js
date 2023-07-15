@@ -14,7 +14,7 @@ app.post('/recipes', async (req, res) => {
   const recipe = req.body;
   
   if (!recipe.title || !recipe.making_time || !recipe.serves || !recipe.ingredients || !recipe.cost) {
-    res.status(500).json({ message: 'Recipe creation failed!', required: 'title, making_time, serves, ingredients, cost' });
+    res.status(200).json({ message: 'Recipe creation failed!', required: 'title, making_time, serves, ingredients, cost' });
     return;
   }
 
@@ -57,7 +57,7 @@ app.get('/recipes/:id', async (req, res) => {
     if (result.rows.length > 0) {
       res.status(200).json({
         message: 'Recipe details by id',
-        recipe: result.rows[0]});
+        recipe: [result.rows[0]]});
     }
   } catch (error) {
     res.status(500).json({ error: 'Internal server error' });
@@ -93,8 +93,8 @@ app.delete('/recipes/:id', async (req, res) => {
     } else {
       res.status(200).json({ message: 'Recipe successfully removed!' });
     }
-  } catch (error) {
-    res.status(500).json({ error: 'Internal server error' });
+  } catch (er) {
+    res.status(500).json({ error: 'Internal server error', e: er });
   }
   const recipeId = req.params.id;
 });
