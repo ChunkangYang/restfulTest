@@ -1,29 +1,52 @@
 const express = require('express');
+const { Pool } = require('pg');
 const app = express();
 
 app.use(express.json());
 
 
-let recipes = ["name","Stan"];
-
-
-app.post('/recipes', (req, res) => {
-  const recipe = req.body;
-  recipes.push(recipe);
-  res.status(201).json(recipe);
+const pool = new Pool({
+  connectionString: 'postgres://root:TLaNNuzwcGtixcp73G67XfguyUAMFk3i@dpg-cip2fq6nqql4qa1bll3g-a.oregon-postgres.render.com/restful_test',
 });
 
-app.get('/recipes', (req, res) => {
-  res.json(recipes);
+
+app.post('/recipes', async (req, res) => {
+  try {
+    const { title, making_time, serves, ingredients, cost } = req.body;
+    const query = 'INSERT INTO recipes (title, making_time, serves, ingredients, cost) VALUES ($1, $2, $3, $4, $5) RETURNING *';
+    const values = [title, making_time, serves, ingredients, cost];
+    const result = await pool.query(query, values);
+    res.status(201).json(result.rows[0]);
+  } catch (error) {
+    res.status(500).json({ error: 'Internal server error' });
+  }
 });
 
-app.get('/recipes/:id', (req, res) => {
-  const id = req.params.id;
-  const recipe = recipes.find(r => r.id === id);
-  if (recipe) {
-    res.json(recipe);
-  } else {
-    res.status(404).json({ error: 'Recipe not found' });
+
+app.get('/recipes', async (req, res) => {
+  try {
+    const query = 'SELECT id, title FROM recipes';
+    const result = await pool.query(query);
+    const recipes = result.rows.map(row => ({ id: row.id, title: row.title }));
+    res.json({ recipes });
+  } catch (error) {
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+
+app.get('/recipes/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const query = 'SELECT * FROM recipes WHERE id = $1';
+    const result = await pool.query(query, [id]);
+    if (result.rows.length > 0) {
+      res.json(result.rows[0]);
+    } else {
+      res.status(404).json({ error: 'Recipe not found' });
+    }
+  } catch (error) {
+    res.status(500).json({ error: 'Internal server error' });
   }
 });
 
