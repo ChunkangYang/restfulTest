@@ -16,14 +16,14 @@ app.post('/recipes', async (req, res) => {
     const query = 'INSERT INTO recipes (title, making_time, serves, ingredients, cost) VALUES ($1, $2, $3, $4, $5) RETURNING *';
     const values = [title, making_time, serves, ingredients, cost];
     const result = await pool.query(query, values);
-    const resQuery = 'SELECT * FROM recipes';
-    const resResult = await pool.query(resQuery);
-    const recipes = resResult.rows.map(row => ({ id: row.id, title: row.title, making_time: row.making_time,
+    // const resQuery = 'SELECT * FROM recipes WHERE id';
+    // const resResult = await pool.query(resQuery);
+    const recipes = result.rows.map(row => ({ id: row.id, title: row.title, making_time: row.making_time,
         servers: row.servers, ingredients: row.ingredients, cost: row.cost, created_at: row.created_at, updated_at: row.updated_at }));
 
     res.status(200).json({
-        message: '',
-        recipe: result.rows[0]
+        message: 'Recipe successfully created!',
+        recipe: recipes
     })
   } catch (error) {
     res.status(500).json({ message: 'Recipe creation failed!', required: 'title, making_time, serves, ingredients, cost' });
