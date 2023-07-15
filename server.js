@@ -25,15 +25,15 @@ app.post('/recipes', async (req, res) => {
 
 app.get('/recipes', async (req, res) => {
   try {
-    // const query = 'SELECT id, title, making_time, serves, ingredients, cost FROM recipes';
-    // const result = await pool.query(query);
-    // const recipes = result.rows.map(row => ({ id: row.id, title: row.title, making_time: row.making_time,
-    //     servers: row.servers, ingredients: row.ingredients, cost: row.cost }));
-    // res.json({ recipes });
-    const query = 'SELECT * FROM recipes';
+    const query = 'SELECT id, title, making_time, serves, ingredients, cost FROM recipes';
     const result = await pool.query(query);
-    const recipes = result.rows.map(row => ({ id: row.id }));
+    const recipes = result.rows.map(row => ({ id: row.id, title: row.title, making_time: row.making_time,
+        servers: row.servers, ingredients: row.ingredients, cost: row.cost }));
     res.json({ recipes });
+    // const query = 'SELECT * FROM recipes';
+    // const result = await pool.query(query);
+    // const recipes = result.rows.map(row => ({ id: row.id }));
+    // res.json({ recipes });
   } catch (err) {
     res.status(500).json({ error: 'Internal server error', e: err });
   }
