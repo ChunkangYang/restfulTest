@@ -63,7 +63,8 @@ app.get('/recipes/:id', async (req, res) => {
       servers: row.servers, ingredients: row.ingredients, cost: row.cost }));
     res.status(200).json({
       message: 'Recipe details by id',
-      recipe: [recipes] });
+      recipe: recipes
+    });
   } catch (error) {
     res.status(500).json({ error: 'Internal server error' });
   }
