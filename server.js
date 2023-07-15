@@ -54,11 +54,16 @@ app.get('/recipes/:id', async (req, res) => {
     const { id } = req.params;
     const query = 'SELECT * FROM recipes WHERE id = $1';
     const result = await pool.query(query, [id]);
-    if (result.rows.length > 0) {
-      res.status(200).json({
-        message: 'Recipe details by id',
-        recipe: [result.rows[0]]});
-    }
+    // if (result.rows.length > 0) {
+    //   res.status(200).json({
+    //     message: 'Recipe details by id',
+    //     recipe: [result.rows[0]]});
+    // }
+    const recipes = result.rows.map(row => ({ id: row.id, title: row.title, making_time: row.making_time,
+      servers: row.servers, ingredients: row.ingredients, cost: row.cost }));
+    res.status(200).json({
+      message: 'Recipe details by id',
+      recipe: [recipes] });
   } catch (error) {
     res.status(500).json({ error: 'Internal server error' });
   }
