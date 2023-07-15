@@ -64,7 +64,7 @@ app.get('/recipes/:id', async (req, res) => {
   }
 });
 
-app.patch('/recipes/:id', (req, res) => {
+app.patch('/recipes/:id', async (req, res) => {
   try {
     const { id } = req.params;
     const updatedFields = req.body;
@@ -82,7 +82,7 @@ app.patch('/recipes/:id', (req, res) => {
   }
 });
 
-app.delete('/recipes/:id', (req, res) => {
+app.delete('/recipes/:id', async (req, res) => {
   try {
     const id = req.params;
     const query = 'DELETE FROM recipes WHERE id = $1'
