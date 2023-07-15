@@ -30,8 +30,8 @@ app.get('/recipes', async (req, res) => {
     const recipes = result.rows.map(row => ({ id: row.id, title: row.title, making_time: row.making_time,
         servers: row.servers, ingredients: row.ingredients, cost: row.cost }));
     res.json({ recipes });
-  } catch (error) {
-    res.status(500).json({ error: 'Internal server error' });
+  } catch (err) {
+    res.status(500).json({ error: 'Internal server error', e: err });
   }
 });
 
