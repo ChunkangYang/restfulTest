@@ -4,7 +4,7 @@ const app = express();
 app.use(express.json());
 
 
-let recipes = [];
+let recipes = ["name","Stan"];
 
 
 app.post('/recipes', (req, res) => {
