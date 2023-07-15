@@ -86,7 +86,7 @@ app.delete('/recipes/:id', async (req, res) => {
   try {
     const { id } = req.params;
     const query = 'DELETE FROM recipes WHERE id = $1'
-    const result = await query(query, id);
+    const result = await query(query, [id]);
     const rowsAffected = result.rowCount;
     if (rowsAffected == 0) {
       res.status(200).json({ message: 'No Recipe found' });
